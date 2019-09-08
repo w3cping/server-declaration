@@ -1,30 +1,30 @@
-# Transparency via a Machine-readable Server Identity and Purpose Descriptor.
+# A Machine-readable Server Identity and Purpose Descriptor, and mechanisms for delivering a low-entropy signal indicating user consent. 
 
-Mike O'Neill, Febuary 2019
+Mike O'Neill, February 2019
 
 Contributors:
 * Mike O'Neill <[michael.oneill@baycloud.com](mailto:michael.oneill@baycloud.com)>
 
 ©2019, Baycloud Systems Ltd. All rights reserved.
 
-Web pages often contain many, sometimes hundreds, of elements that initiate transactions with servers other 
+Web pages often contain many, sometimes hundreds, of "third-party" components that initiate transactions with servers other 
 than those managed by the top-level website. 
-These "third-party" servers can collect personal data, 
-link it to data from other sources, and the user is usually completely unaware of this.
+These "third-party" servers can access storage in the user's device or browser, collect personal data, 
+and link it to data from other sources. The user is usually completely unaware of this.
 
 Unfortunately, there is no recognised standard way for web servers to declare this information
 i.e. to deliver information that allow users to identify the entities, 
 what their purpose(s) for data collection are (if any), 
 who they share it with, how long they keep it etc.
 
-There is increasing legal pressure around the world for websites to declare their use of data collection procedures, 
+There is increasing legal pressure around the world for websites to at least declare their use of data collection procedures, 
 explain how they intend to use the data, or what their legal basis is. 
-In some jurisdictions users have to be offered the right to have their previously collected data deleted, 
-while in others prior consent is needed before data is collected.
+In many jurisdictions users must be given the opportunity to give or withdraw their agreement to storage access or personal data collection, 
+and offered the right to have any previously collected data deleted.
 
-In addition user agents have implemented procedures that by default restrict the ability of embedded sub-resources
-to access cookies. Some of these sub-resources may be managed by the same entity managing the top-level site, 
-or have previously been given explicit consent by the user. A machine-readable mechanism to record this could be useful.
+In addition, user agents have implemented procedures that in some circumstances block particular third-party elements
+or restrict their ability to access cookies. Some of these sub-resources may be managed by the same entity managing the top-level site, 
+or have previously been given explicit consent by the user. A machine-readable mechanism to record and communicate this could be useful.
 
 The following is a possible JSON encoding that can deliver the required machine-readable information
 so that a user agent can make it accessible by the user in an standardised and easily digestible way, 
@@ -62,21 +62,26 @@ or the length of time before consent expires.
 
 ### Conveying User Agent Registered User Consent.
 
-There should be some standardisation on a low-entropy request header signal, which could be an existing header in widespread use like DNT,
+There should be some standardisation of a low-entropy client originated signal, which could be an existing request header in widespread use like DNT,
+a new request header designed to be a better fit with European ePrivacy and data protection law,
 or a specific cookie name such at the IAB EU's `euconsent` cookie. Another avenue could maybe be explored by extending the cookie "prefix" options
 described in "[Cookies: HTTP State Management Mechanism draft-ietf-httpbis-rfc6265bis-02](https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-02#page-14)". 
 For example here is a way to encode a consent indication cookie:
 ```
-Set-Cookie: __Consent-eprivacy=1,5,6; Expires=Sun, 06 Nov 2019 08:49:37 GMT
+Set-Cookie: __Consent-eu=1,5,6; SameSite=Strict; Expires=Sun, 06 Nov 2019 08:49:37 GMT
 ```
-The value `1,5,6` indicates the set of purposes agreed to by this user, i.e. an index into the PurposeType array.
-
+TThe cookie has the `SameSite` attribute set to `Strict` so it is restricted to the top-level site, i.e. it can only signal site-specific consent. 
 Using a prefix could allow for recognition and then "special treatment" for low-entropy "consent indication" cookies by user agents. 
-For example User Agents could restrict their scope to the context of a top-level origin, 
-so all or specified embedded origins could receive "site-specific" consent indications. 
-This behaviour would have to be implemented by user agents, 
-but would improve the web by enabling users to give their "site-specific" consent to certain embedded third-party resources,
-for instance on publishers' sites.
+For example User Agents could restrict the scope of such cookies to the context of a top-level origin, 
+so all or specified embedded origins on a particular site could receive "site-specific" consent indications.
+
+The site-specific delivery of consent cookies is impossible without explicit browser or browser extension support,  
+so another method should be standardised so servers can deliver the functionality themselves. The IABEU's TCF proposes a templating system
+in order to deliver consent information within the request url i.e. as an appended query parameter. This has been forced on them by the increasing restrictions placed by some browsers, 
+e.g. Safari and Firefox, on the use of third-party cookies, but a low-entropy version of this approach would allow for site-specific consent within the web sites that support the functionality. 
+
+
+
 
 
 
