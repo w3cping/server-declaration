@@ -5,7 +5,6 @@ Mike O'Neill, February 2019
 Contributors:
 * Mike O'Neill <[michael.oneill@baycloud.com](mailto:michael.oneill@baycloud.com)>
 
-©2019, Baycloud Systems Ltd. All rights reserved.
 
 Web pages often contain many, sometimes hundreds, of "third-party" components that initiate transactions with servers other 
 than those managed by the top-level website. 
